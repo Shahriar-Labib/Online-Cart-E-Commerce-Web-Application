@@ -7,7 +7,9 @@ import com.OnlineCart.service.CartService;
 import com.OnlineCart.service.CategoryService;
 import com.OnlineCart.service.OrderService;
 import com.OnlineCart.service.UserDetailsService;
+import jakarta.persistence.Entity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
@@ -36,6 +38,9 @@ public class UserController {
 
     @Autowired
     private CommonUtil commonUtil;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @ModelAttribute
     public void getUserDetails(Principal principal, Model model)
@@ -192,6 +197,37 @@ public class UserController {
             session.addFlashAttribute("successMsg","Profile Updated Successfully");
         }
 
+        return "redirect:/user/profile";
+    }
+
+
+    @PostMapping("/change-password")
+    public String changePassword(@RequestParam String newPassword,
+                                 @RequestParam String currentPassword,
+                                 Principal p,
+                                 RedirectAttributes session)
+    {
+       UserDatas loggedInUserDetails = getLoggedInUserDetails(p);
+      boolean check = passwordEncoder.matches(currentPassword,loggedInUserDetails.getPassword());
+
+      if(check)
+      {
+         String encodePassword = passwordEncoder.encode(newPassword);
+         loggedInUserDetails.setPassword(encodePassword);
+        UserDatas updateUser = userDetailsService.updateUser(loggedInUserDetails);
+
+        if(ObjectUtils.isEmpty(updateUser))
+        {
+            session.addFlashAttribute("errorMsg","Password not updated !!!");
+        }
+        else{
+            session.addFlashAttribute("successMsg","Password updated successfully");
+        }
+
+      }
+      else{
+          session.addFlashAttribute("errorMsg","Current Password is incorrect");
+      }
         return "redirect:/user/profile";
     }
 
