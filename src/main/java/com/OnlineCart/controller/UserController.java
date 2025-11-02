@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
@@ -166,9 +167,32 @@ public class UserController {
         if (!ObjectUtils.isEmpty(updateOrder)) {
             session.addFlashAttribute("successMsg", "Status Updated");
         } else {
-            session.addFlashAttribute("errorMsg", "status not updated");
+            session.addFlashAttribute("", "status not updated");
         }
         return "redirect:/user/user-orders";
+    }
+
+    @GetMapping("/profile")
+    public String profile()
+    {
+        return "profile";
+    }
+
+    @PostMapping("/update-profile")
+    public String updateProfile(@ModelAttribute UserDatas user,
+                                @RequestParam MultipartFile img,
+                                RedirectAttributes session)
+    {
+       UserDatas updateUserProfile = userDetailsService.updateUserProfile(user,img);
+        if(ObjectUtils.isEmpty(updateUserProfile))
+        {
+            session.addFlashAttribute("errorMsg","Profile Not Updated");
+        }
+        else{
+            session.addFlashAttribute("successMsg","Profile Updated Successfully");
+        }
+
+        return "redirect:/user/profile";
     }
 
 

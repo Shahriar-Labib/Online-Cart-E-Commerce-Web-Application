@@ -1,6 +1,7 @@
 package com.OnlineCart.service;
 
 import com.OnlineCart.model.UserDatas;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -27,4 +28,7 @@ public interface UserDetailsService {
     public UserDatas getUserByToken(String token);
 
     public UserDatas updateUser(UserDatas user);
+
+    public UserDatas updateUserProfile(UserDatas user, MultipartFile img);
+
 }

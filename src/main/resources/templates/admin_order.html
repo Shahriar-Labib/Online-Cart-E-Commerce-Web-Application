@@ -13,14 +13,20 @@
             <hr>
             <a href="/admin/" class="text-decoration-none"><i
                     class="fa-solid fa-arrow-left"></i> Back</a>
-            <th:block th:if="${session.successMsg}">
-                <p class="text-success fw-bold text-center">[[${session.successMsg}]]</p>
-                <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+            <th:block th:if="${successMsg}">
+                <p class="text-success fw-bold text-center">
+                    [[${successMsg}]]
+                </p>
+                <!-- Fix: Call removeSessionMessage() as a method -->
+                <th:block th:text="${@commonServiceImpl.removeSessionMessage()}"></th:block>
             </th:block>
 
-            <th:block th:if="${session.errorMsg}">
-                <p class="text-danger fw-bold text-center">[[${session.errorMsg}]]</p>
-                <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+            <th:block th:if="${errorMsg}">
+                <p class="text-danger fw-bold text-center">
+                    [[${errorMsg}]]
+                </p>
+                <!-- Fix: Call removeSessionMessage() as a method -->
+                <th:block th:text="${@commonServiceImpl.removeSessionMessage()}"></th:block>
             </th:block>
             <div class="col-md-4 p-4">
 

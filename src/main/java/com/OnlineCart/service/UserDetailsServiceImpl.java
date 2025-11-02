@@ -4,10 +4,18 @@ import com.OnlineCart.Utils.AppConstant;
 import com.OnlineCart.model.UserDatas;
 import com.OnlineCart.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -118,5 +126,40 @@ public class UserDetailsServiceImpl implements UserDetailsService{
     @Override
     public UserDatas updateUser(UserDatas user) {
         return userRepository.save(user);
+    }
+
+    @Override
+    public UserDatas updateUserProfile(UserDatas user, MultipartFile img) {
+       UserDatas dbUser = userRepository.findById(user.getId()).get();
+
+       if(!img.isEmpty())
+       {
+           dbUser.setProfileImage(img.getOriginalFilename());
+       }
+       if(!ObjectUtils.isEmpty(dbUser))
+       {
+           dbUser.setName(user.getName());
+           dbUser.setMobile(user.getMobile());
+           dbUser.setAddress(user.getAddress());
+           dbUser.setCity(user.getCity());
+           dbUser.setState(user.getState());
+           dbUser.setPincode(user.getPincode());
+           dbUser = userRepository.save(dbUser);
+       }
+        try {
+            if (!img.isEmpty()) {
+                File saveFile = new ClassPathResource("static/img").getFile();
+
+                Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "profile_img" + File.separator
+                        + img.getOriginalFilename());
+
+                System.out.println("Dekhi to path ta " + path);
+
+                Files.copy(img.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return dbUser;
     }
 }
