@@ -10,6 +10,7 @@ import com.OnlineCart.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
@@ -48,6 +49,10 @@ public class AdminController {
     @Autowired
     private CommonUtil commonUtil;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+
     @ModelAttribute
     public void getUserDetails(Principal principal, Model model)
     {
@@ -85,7 +90,7 @@ public class AdminController {
 
     @GetMapping("/category")
     public String category(Model m, @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
-                           @RequestParam(name = "pageSize", defaultValue = "2") Integer pageSize)
+                           @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize)
     {
         //model.addAttribute("categorys",categoryService.getAllCategory());
         Page<Category> page = categoryService.getAllCategorPagination(pageNo, pageSize);
@@ -235,7 +240,7 @@ public class AdminController {
     @GetMapping("/products")
     public String viewProduct(Model m, @RequestParam(defaultValue = "") String ch,
                               @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
-                              @RequestParam(name = "pageSize", defaultValue = "2") Integer pageSize)
+                              @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize)
     {
 //        List<Product> products = null;
 //        if (ch != null && ch.length() > 0) {
@@ -319,16 +324,23 @@ else{
 }
 
 @GetMapping("/users")
-public String getAllUsers(Model model)
+public String getAllUsers(Model m, @RequestParam Integer type)
 {
-   List<UserDatas> users = userDetailsService.getUsers("ROLE_USER");
-    model.addAttribute("users",users);
+    List<UserDatas> users = null;
+    if (type == 1) {
+        users = userDetailsService.getUsers("ROLE_USER");
+    } else {
+        users = userDetailsService.getUsers("ROLE_ADMIN");
+    }
+    m.addAttribute("userType",type);
+    m.addAttribute("users",users);
    return "user_home";
 }
 
 @GetMapping("/updatestatus")
-public String updateAccountStatus(@RequestParam Boolean status,
-                                  @RequestParam Integer id,
+public String updateUserAccountStatus(@RequestParam Boolean status,
+                                    @RequestParam Integer id,
+                                      @RequestParam Integer type,
                                   RedirectAttributes session)
 {
   Boolean f = userDetailsService.updateAccountStatus(id,status);
@@ -341,12 +353,12 @@ public String updateAccountStatus(@RequestParam Boolean status,
        session.addFlashAttribute("errorMsg","Something is wrong");
    }
 
-    return "redirect:/admin/users";
+    return "redirect:/admin/users?type="+type;
 }
 
     @GetMapping("/orders")
     public String getAllOrders(Model m,@RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
-                               @RequestParam(name = "pageSize", defaultValue = "2") Integer pageSize)
+                               @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize)
     {
 //        List<ProductOrder> allOrders = orderService.getAllOrders();
 //        model.addAttribute("orders",allOrders);
@@ -368,8 +380,9 @@ public String updateAccountStatus(@RequestParam Boolean status,
     }
 
     @GetMapping("/search-order")
-    public String searchProduct(@RequestParam String orderId, Model m, RedirectAttributes session,@RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
-                                @RequestParam(name = "pageSize", defaultValue = "2") Integer pageSize) {
+    public String searchProduct(@RequestParam String orderId, Model m, RedirectAttributes session,
+                                @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
+                                @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
 
         if (orderId != null && orderId.length() > 0) {
 
@@ -402,6 +415,77 @@ public String updateAccountStatus(@RequestParam Boolean status,
         }
         return "admin_order";
 
+    }
+
+
+    @GetMapping("/add-admin")
+    public String loadAdminAdd() {
+        return "add_admin";
+    }
+
+    @PostMapping("/save-admin")
+    public String saveAdmin(@ModelAttribute UserDatas user, @RequestParam("img") MultipartFile file, RedirectAttributes session)
+            throws IOException {
+
+        String imageName = file.isEmpty() ? "default.jpg" : file.getOriginalFilename();
+        user.setProfileImage(imageName);
+        UserDatas saveUser = userDetailsService.saveAdmin(user);
+
+        if (!ObjectUtils.isEmpty(saveUser)) {
+            if (!file.isEmpty()) {
+                File saveFile = new ClassPathResource("static/img").getFile();
+
+                Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "profile_img" + File.separator
+                        + file.getOriginalFilename());
+
+//				System.out.println(path);
+                Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+            }
+            session.addFlashAttribute("successMsg", "Register successfully");
+        } else {
+            session.addFlashAttribute("errorMsg", "something wrong on server");
+        }
+
+        return "redirect:/admin/add-admin";
+    }
+
+    @GetMapping("/profile")
+    public String profile() {
+        return "admin_profile";
+    }
+
+    @PostMapping("/update-profile")
+    public String updateProfile(@ModelAttribute UserDatas user, @RequestParam MultipartFile img, RedirectAttributes session) {
+        UserDatas updateUserProfile = userDetailsService.updateUserProfile(user, img);
+        if (ObjectUtils.isEmpty(updateUserProfile)) {
+            session.addFlashAttribute("errorMsg", "Profile not updated");
+        } else {
+            session.addFlashAttribute("successMsg", "Profile Updated");
+        }
+        return "redirect:/admin/profile";
+    }
+
+    @PostMapping("/change-password")
+    public String changePassword(@RequestParam String newPassword, @RequestParam String currentPassword, Principal p,
+                                 RedirectAttributes session) {
+        UserDatas loggedInUserDetails = commonUtil.getLoggedInUserDetails(p);
+
+        boolean matches = passwordEncoder.matches(currentPassword, loggedInUserDetails.getPassword());
+
+        if (matches) {
+            String encodePassword = passwordEncoder.encode(newPassword);
+            loggedInUserDetails.setPassword(encodePassword);
+            UserDatas updateUser = userDetailsService.updateUser(loggedInUserDetails);
+            if (ObjectUtils.isEmpty(updateUser)) {
+                session.addFlashAttribute("errorMsg", "Password not updated !! Error in server");
+            } else {
+                session.addFlashAttribute("successMsg", "Password Updated sucessfully");
+            }
+        } else {
+            session.addFlashAttribute("errorMsg", "Current Password incorrect");
+        }
+
+        return "redirect:/admin/profile";
     }
 
     @PostMapping("/update-order-status")

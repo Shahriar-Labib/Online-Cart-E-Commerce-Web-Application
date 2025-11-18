@@ -162,4 +162,17 @@ public class UserDetailsServiceImpl implements UserDetailsService{
         }
         return dbUser;
     }
+
+    @Override
+    public UserDatas saveAdmin(UserDatas user) {
+        user.setRole("ROLE_ADMIN");
+        user.setIsEnable(true);
+        user.setAccountNonLocked(true);
+        user.setFailedAttempt(0);
+
+        String encodePassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodePassword);
+        UserDatas saveUser = userRepository.save(user);
+        return saveUser;
+    }
 }

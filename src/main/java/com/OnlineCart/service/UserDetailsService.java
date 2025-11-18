@@ -31,4 +31,6 @@ public interface UserDetailsService {
 
     public UserDatas updateUserProfile(UserDatas user, MultipartFile img);
 
+    public UserDatas saveAdmin(UserDatas user);
+
 }

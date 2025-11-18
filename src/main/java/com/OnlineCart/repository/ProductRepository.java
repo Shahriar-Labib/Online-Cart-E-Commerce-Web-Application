@@ -12,11 +12,14 @@ public interface ProductRepository extends JpaRepository<Product,Integer> {
 
     public Page<Product> findByIsActiveTrue(Pageable pageable);
 
-    public Page<Product> findByCategory(Pageable pageable,String category);
+    public Page<Product> findByCategory(Pageable pageable, String category);
 
-    public Page<Product> findByTitleContainingIgnoreCaseOrCategoryContainingIgnoreCase(String ch, String ch2, Pageable pageable);
+    public Page<Product> findByTitleContainingIgnoreCaseOrCategoryContainingIgnoreCase(String ch, String ch2,
+                                                                                       Pageable pageable);
 
     public List<Product> findByCategory(String category);
 
+    public Page<Product> findByisActiveTrueAndTitleContainingIgnoreCaseOrCategoryContainingIgnoreCase(String ch, String ch2,
+                                                                                               Pageable pageable);
     public List<Product> findByTitleContainingIgnoreCaseOrCategoryContainingIgnoreCase(String ch, String ch2);
 }

@@ -17,71 +17,93 @@
 </head>
 
 <body>
-<section class="py-5 mt-5">
-    <div class="container">
-        <h2 class="text-center">Admin Dashboard</h2>
-        <div class="row">
-            <div class="col-md-4 mt-5">
-                <a th:href="@{/admin/addproduct}" class="text-decoration-none">
-                    <div class="card shadow p-3 mb-5 bg-body-tertiary rounded text-center">
-                        <div class="card-body">
-                            <i class="fa-solid fa-plus fa-2x text-primary"></i>
-                            <p class="fs-5 text-primary">Add Product</p>
+<section>
+    <div class="container p-5">
+        <p class="text-center fs-3 mt-4">Admin Dashboard</p>
+        <div class="row p-5">
+            <div class="col-md-4 mt-2">
+                <a href="/admin/addproduct" class="text-decoration-none">
+                    <div class="card card-sh">
+                        <div class="card-body text-center text-primary">
+                            <i class="fa-solid fa-square-plus fa-3x"></i>
+                            <h4>Add Product</h4>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+
+            <div class="col-md-4 mt-2">
+                <a href="/admin/category" class="text-decoration-none">
+                    <div class="card card-sh">
+                        <div class="card-body text-center text-warning">
+                            <i class="fa-solid fa-list fa-3x"></i>
+                            <h4>Add Category</h4>
                         </div>
                     </div>
                 </a>
             </div>
-            <div class="col-md-4 mt-5">
-                <a th:href="@{/admin/category}" class="text-decoration-none">
-                    <div class="card shadow p-3 mb-5 bg-body-tertiary rounded text-center">
-                        <div class="card-body">
-                            <i class="fa-solid fa-arrow-left fa-2x text-primary"></i>
-                            <p class="fs-5 text-primary">Add Category</p>
+
+            <div class="col-md-4 mt-2">
+                <a href="/admin/products" class="text-decoration-none">
+                    <div class="card card-sh">
+                        <div class="card-body text-center text-success">
+                            <i class="fa-solid fa-table-list fa-3x"></i>
+                            <h4>View Product</h4>
                         </div>
                     </div>
                 </a>
             </div>
-            <div class="col-md-4 mt-5">
-                <a th:href="@{/admin/products}" class="text-decoration-none">
-                    <div class="card shadow p-3 mb-5 bg-body-tertiary rounded text-center">
-                        <div class="card-body">
-                            <i class="fa-solid fa-book fa-2x text-danger"></i>
-                            <p class="fs-5 text-primary">View Product</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-4 ">
+
+
+            <div class="col-md-4 mt-4">
                 <a href="/admin/orders" class="text-decoration-none">
-                    <div class="card shadow p-3 mb-5 bg-body-tertiary rounded text-center">
-                        <div class="card-body">
-                            <i class="fa-solid fa-box-open fa-2x text-warning"></i>
-                            <p class="fs-5 text-primary">Orders</p>
+                    <div class="card card-sh">
+                        <div class="card-body text-center text-warning">
+                            <i class="fa-solid fa-box-open fa-3x"></i>
+                            <h4>Orders</h4>
                         </div>
                     </div>
                 </a>
             </div>
-            <div class="col-md-4">
-                <a th:href="@{/admin/users}" class="text-decoration-none">
-                    <div class="card shadow p-3 mb-5 bg-body-tertiary rounded text-center">
-                        <div class="card-body">
-                            <i class="fa-solid fa-user fa-2x text-primary"></i>
-                            <p class="fs-5 text-primary">Users</p>
+
+            <div class="col-md-4 mt-4">
+                    <a href="/admin/users?type=1" class="text-decoration-none">
+                        <div class="card card-sh">
+                            <div class="card-body text-center text-primary">
+                                <i class="fa-solid fa-circle-user fa-3x"></i>
+                                <h4>Users</h4>
+                            </div>
+                        </div>
+                    </a>
+            </div>
+
+            <div class="col-md-4 mt-4">
+
+                    <a href="/admin/add-admin" class="text-decoration-none">
+                        <div class="card card-sh">
+                            <div class="card-body text-center text-primary">
+                                <i class="fa-solid fa-user-plus fa-3x"></i>
+                                <h4>Add Admin</h4>
+                            </div>
+                        </div>
+                    </a>
+            </div>
+
+
+            <div class="col-md-4 mt-4">
+                <a href="/admin/users?type=2" class="text-decoration-none">
+                    <div class="card card-sh">
+                        <div class="card-body text-center text-primary">
+                            <i class="fa-solid fa-circle-user fa-3x"></i>
+                            <h4>Admin</h4>
                         </div>
                     </div>
                 </a>
             </div>
-            <div class="col-md-4">
-                <a href="" class="text-decoration-none">
-                    <div class="card shadow p-3 mb-5 bg-body-tertiary rounded text-center">
-                        <div class="card-body">
-                            <i class="fa-solid fa-user-plus fa-2x text-primary"></i>
-                            <p class="fs-5 text-primary">Add Admin</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
+
         </div>
+
     </div>
 </section>
 </body>

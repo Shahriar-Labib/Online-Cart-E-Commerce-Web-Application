@@ -1,6 +1,8 @@
 package com.OnlineCart.Utils;
 
 import com.OnlineCart.model.ProductOrder;
+import com.OnlineCart.model.UserDatas;
+import com.OnlineCart.service.UserDetailsService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,12 +12,16 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
+import java.security.Principal;
 
 @Component
 public class CommonUtil {
 
     @Autowired
     private JavaMailSender mailSender;
+
+    @Autowired
+    private UserDetailsService userService;
 
     public Boolean sendMail(String url,String email) throws MessagingException, UnsupportedEncodingException {
         MimeMessage message = mailSender.createMimeMessage();
@@ -78,5 +84,11 @@ public class CommonUtil {
         helper.setText(msg, true);
         mailSender.send(message);
         return true;
+    }
+
+    public UserDatas getLoggedInUserDetails(Principal p) {
+        String email = p.getName();
+        UserDatas userDtls = userService.getUserByEmail(email);
+        return userDtls;
     }
 }
