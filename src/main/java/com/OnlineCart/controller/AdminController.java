@@ -7,7 +7,6 @@ import com.OnlineCart.model.Product;
 import com.OnlineCart.model.ProductOrder;
 import com.OnlineCart.model.UserDatas;
 import com.OnlineCart.service.*;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
@@ -307,7 +306,33 @@ public String updateAccountStatus(@RequestParam Boolean status,
     {
         List<ProductOrder> allOrders = orderService.getAllOrders();
         model.addAttribute("orders",allOrders);
+        model.addAttribute("srch", false);
         return "admin_order";
+    }
+
+    @GetMapping("/search-order")
+    public String searchProduct(@RequestParam String orderId, Model m, RedirectAttributes session) {
+
+        if (orderId != null && orderId.length() > 0) {
+
+            ProductOrder order = orderService.getOrdersByOrderId(orderId.trim());
+
+            if (ObjectUtils.isEmpty(order)) {
+                session.addFlashAttribute("errorMsg","Incorrect order Id");
+                m.addAttribute("orderDtls", null);
+                return "redirect:/admin/orders";
+            } else {
+                m.addAttribute("orderDtls", order);
+            }
+
+            m.addAttribute("srch", true);
+        } else {
+            List<ProductOrder> allOrders = orderService.getAllOrders();
+            m.addAttribute("orders", allOrders);
+            m.addAttribute("srch", false);
+        }
+        return "admin_order";
+
     }
 
     @PostMapping("/update-order-status")

@@ -135,9 +135,14 @@ public Product updateProduct(Product product, MultipartFile image) throws IOExce
             products = productRepository.findByIsActiveTrue();
         }
         else {
-           products = productRepository.findByCategory(category);
+            products = productRepository.findByCategory(category);
         }
 
         return products;
+    }
+
+    @Override
+    public List<Product> searchProduct(String ch) {
+        return productRepository.findByTitleContainingIgnoreCaseOrCategoryContainingIgnoreCase(ch, ch);
     }
 }
