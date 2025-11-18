@@ -3,6 +3,7 @@ package com.OnlineCart.service;
 import com.OnlineCart.model.OrderRequset;
 import com.OnlineCart.model.ProductOrder;
 import org.hibernate.query.Order;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -17,4 +18,7 @@ public interface OrderService {
     public List<ProductOrder> getAllOrders();
 
     public ProductOrder getOrdersByOrderId(String orderId);
+
+    public Page<ProductOrder> getAllOrdersPagination(Integer pageNo, Integer pageSize);
+
 }

@@ -1,6 +1,7 @@
 package com.OnlineCart.service;
 
 import com.OnlineCart.model.Category;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,4 +20,7 @@ public interface CategoryService {
     public Category getCategoryById(int id);
 
     public List<Category> getAllActiveCategory();
+
+    public Page<Category> getAllCategorPagination(Integer pageNo, Integer pageSize);
+
 }
