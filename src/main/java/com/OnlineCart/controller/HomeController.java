@@ -79,11 +79,9 @@ public class HomeController {
     public String index(Model m){
 
         List<Category> allActiveCategory = categoryService.getAllActiveCategory().stream()
-                .sorted((c1,c2)->c2.getId().compareTo(c1.getId()))
-                .limit(6).toList();
+                .sorted((c1, c2) -> c2.getId().compareTo(c1.getId())).limit(6).toList();
         List<Product> allActiveProducts = productService.getAllActiveProducts("").stream()
-                .sorted((p1,p2)->p2.getId().compareTo(p1.getId()))
-                .limit(8).toList();
+                .sorted((p1, p2) -> p2.getId().compareTo(p1.getId())).limit(8).toList();
         m.addAttribute("category", allActiveCategory);
         m.addAttribute("products", allActiveProducts);
 
@@ -147,32 +145,34 @@ public class HomeController {
 
     @PostMapping("/saveUser")
     public String saveUser(@ModelAttribute UserDatas user,
-                           @RequestParam("img") MultipartFile file, RedirectAttributes redirectAttributes)
+                           @RequestParam("img") MultipartFile file, RedirectAttributes session)
             throws IOException
     {
-        String imageName = file.isEmpty() ? "default.jpg" : file.getOriginalFilename();
-        user.setProfileImage(imageName);
+        Boolean existsEmail = userDetailsService.existsEmail(user.getEmail());
 
-       UserDatas saveUser = userDetailsService.saveUser(user);
+        if (existsEmail) {
+            session.addFlashAttribute("errorMsg", "Email already exist");
+        } else {
+            String imageName = file.isEmpty() ? "default.jpg" : file.getOriginalFilename();
+            user.setProfileImage(imageName);
+            UserDatas saveUser = userDetailsService.saveUser(user);
 
-        if(!ObjectUtils.isEmpty(saveUser))
-        {
-            if(!file.isEmpty())
-            {
-                File saveFile =  new ClassPathResource("static/img").getFile();
+            if (!ObjectUtils.isEmpty(saveUser)) {
+                if (!file.isEmpty()) {
+                    File saveFile = new ClassPathResource("static/img").getFile();
 
-                Path path = Paths.get(saveFile.getAbsolutePath()+File.separator+"profile_img"+File.separator+file.getOriginalFilename());
+                    Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "profile_img" + File.separator
+                            + file.getOriginalFilename());
 
-                System.out.println(path);
-                Files.copy(file.getInputStream(),path, StandardCopyOption.REPLACE_EXISTING);
-                redirectAttributes.addFlashAttribute("successMsg", "Registered successfully");
-
-            }
-            else{
-                redirectAttributes.addFlashAttribute("errorMsg", "Something is wrong");
-
+//					System.out.println(path);
+                    Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+                }
+                session.addFlashAttribute("successMsg", "Register successfully");
+            } else {
+                session.addFlashAttribute("errorMsg", "something wrong on server");
             }
         }
+
         return "redirect:/register";
     }
 

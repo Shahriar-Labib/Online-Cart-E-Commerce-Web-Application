@@ -175,4 +175,10 @@ public class UserDetailsServiceImpl implements UserDetailsService{
         UserDatas saveUser = userRepository.save(user);
         return saveUser;
     }
+
+    @Override
+    public Boolean existsEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
 }
