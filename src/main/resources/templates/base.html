@@ -2,139 +2,127 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Online Cart</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- Local stylesheet from /static/css/style.css -->
-    <link rel="stylesheet" th:href="@{/css/style.css}" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+
+    <style>
+        body { background: #f4f6f9; }
+
+        .navbar {
+            background: linear-gradient(45deg, #0c8c47, #0f7f40) !important;
+            box-shadow: 0px 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.2);
+            border-radius: 6px;
+        }
+
+        .content-wrapper {
+            margin-top: 90px;
+        }
+
+        .custom-footer {
+            background: linear-gradient(45deg, #0c8c47, #0f7f40);
+            padding: 12px;
+            color: white;
+            font-weight: 500;
+        }
+    </style>
+
 </head>
 <body>
 
-<!-- Navbar-->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/}">
+            <i class="fa-solid fa-cart-shopping"></i> Online Store
+        </a>
 
-        <nav class="navbar navbar-expand-lg bg-success fixed-top navbar-dark">
-            <div class="container-fluid">
-                <a class="navbar-brand" th:href="@{/}"><i class="fa-solid fa-cart-shopping"></i>Online Store</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-                        <th:block th:if="${user==null}">
-                            <li class="nav-item"><a class="nav-link active"
-                                                    aria-current="page" href="/"><i class="fa-solid fa-house"></i>
-                                Home</a></li>
-                        </th:block>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
-                        <th:block th:unless="${user==null}">
-                            <li class="nav-item" th:if="${user.role=='ROLE_ADMIN'}"><a
-                                    class="nav-link active" aria-current="page" href="/admin/"><i
-                                    class="fa-solid fa-house"></i> Home</a></li>
+            <ul class="navbar-nav me-auto">
 
-                            <li class="nav-item" th:if="${user.role=='ROLE_USER'}"><a
-                                    class="nav-link active" aria-current="page" href="/"><i
-                                    class="fa-solid fa-house"></i> Home</a></li>
-                        </th:block>
+                <th:block th:if="${user==null}">
+                    <li class="nav-item"><a class="nav-link active" href="/"><i class="fa-solid fa-house"></i> Home</a></li>
+                </th:block>
 
+                <th:block th:unless="${user==null}">
+                    <li class="nav-item" th:if="${user.role=='ROLE_ADMIN'}"><a class="nav-link active" href="/admin/"><i class="fa-solid fa-house"></i> Home</a></li>
+
+                    <li class="nav-item" th:if="${user.role=='ROLE_USER'}"><a class="nav-link active" href="/"><i class="fa-solid fa-house"></i> Home</a></li>
+                </th:block>
+
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/products}"><i class="fa-solid fa-store"></i> Products</a>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">Categories</a>
+                    <ul class="dropdown-menu">
+                        <li th:each="c:${categorys}">
+                            <a class="dropdown-item" th:href="@{'/products?category='+${c.name}}">[[${c.name}]]</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <ul class="navbar-nav ms-auto">
+
+                <th:block th:if="${user==null}">
+                    <li class="nav-item"><a class="nav-link active" th:href="@{/signin}"><i class="fa-solid fa-right-to-bracket"></i> Login</a></li>
+                    <li class="nav-item"><a class="nav-link active" th:href="@{/register}">Register</a></li>
+                </th:block>
+
+                <th:block th:if="${user!=null}">
+
+                    <th:block th:if="${user.role=='ROLE_USER'}">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" th:href="@{/products}">
-                                <i class="fa-solid fa-store"></i>Products</a>
-                        </li>
-
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Categorey
+                            <a class="nav-link active" th:href="@{/user/cart}">
+                                <i class="fa-solid fa-cart-shopping"></i> Cart [ [[${countCart}]] ]
                             </a>
-                            <ul class="dropdown-menu">
-                                <li th:each="c:${categorys}"><a class="dropdown-item"
-                                                          th:href="@{'/products?category='+${c.name}}">[[${c.name}]]</a></li>
-
-                            </ul>
                         </li>
+                    </th:block>
 
-                    </ul>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">
+                            <i class="fa-solid fa-user"></i> [[${user.name}]]
+                        </a>
 
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <th:block th:if="${user==null}">
+                        <ul class="dropdown-menu">
+                            <li th:if="${user.role=='ROLE_USER'}"><a class="dropdown-item" href="/user/profile">Profile</a></li>
+                            <li th:if="${user.role=='ROLE_ADMIN'}"><a class="dropdown-item" href="/admin/profile">Profile</a></li>
+                            <li th:if="${user.role=='ROLE_USER'}"><a class="dropdown-item" href="/user/user-orders">My Orders</a></li>
+                            <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                        </ul>
+                    </li>
 
-                            <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" th:href="@{/signin}"><i class="fa-solid fa-right-to-bracket"></i>Login</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" th:href="@{/register}">Register</a>
-                            </li>
+                </th:block>
 
-                            <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="#">Admin</a>
-                            </li>
+            </ul>
 
-                        </th:block>
+        </div>
+    </div>
+</nav>
 
-                        <th:block th:if="${user!=null}">
-                            <th:block th:if="${user.role=='ROLE_USER'}">
-                            <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" th:href="@{/user/cart}">
-                                    <i class="fa-solid fa-cart-shopping"></i> Cart [ [[${countCart}]] ]</a>
-                            </li>
-                            </th:block>
+<div class="content-wrapper" th:replace="${content}"></div>
 
-
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fa-solid fa-user"></i> [[${user.name}]]
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li th:if="${user.role=='ROLE_USER'}"><a
-                                            class="dropdown-item" href="/user/profile">Profile</a></li>
-
-                                    <li th:if="${user.role=='ROLE_ADMIN'}"><a
-                                            class="dropdown-item" href="/admin/profile">Profile</a></li>
-
-                                    <li th:if="${user.role=='ROLE_USER'}"><a
-                                            class="dropdown-item" href="/user/user-orders">My Orders</a></li>
-                                    <li><a class="dropdown-item" href="/logout">Logout</a></li>
-
-
-                                </ul>
-                            </li>
-
-<!--                            <li class="nav-item">-->
-<!--                                <a class="nav-link active" aria-current="page" th:href="@{/logout}"><i class="fa-solid fa-right-to-bracket"></i> Logout</a>-->
-<!--                            </li>-->
-
-
-                        </th:block>
-
-
-
-
-
-                    </ul>
-
-                </div>
-            </div>
-        </nav>
-
-
-<!--Footer-->
-
-
-
-<div th:replace="${content}">
+<div class="custom-footer text-center">
+    Online store just for practice
 </div>
-<div class="container-fluid p-1 bg-success text-center text-white">
-    <p>Online store just for practice</p>
-</div>
-<script
-        src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script
-        src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.js"></script>
-<script type="text/javascript" th:src="@{js/script.js}"></script>
-<script type="text/javascript" th:src="@{../js/script.js}"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
