@@ -10,4 +10,6 @@ public interface ProductOrderRepository extends JpaRepository<ProductOrder,Integ
     public List<ProductOrder> findByUserId(Integer userId);
 
     public ProductOrder findByOrderId(String orderId);
+
+    public boolean existsByProductId(Integer productId);
 }

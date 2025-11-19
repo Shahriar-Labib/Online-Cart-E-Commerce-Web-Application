@@ -274,17 +274,17 @@ public class AdminController {
     }
 
     @GetMapping("/deleteProduct/{id}")
-    public String deleteProduct(@PathVariable int id,RedirectAttributes session)
+    public String deleteProduct(@PathVariable int id, RedirectAttributes session)
     {
         Boolean deleteProduct = productService.deleteProduct(id);
 
-        if(deleteProduct)
-        {
-            session.addFlashAttribute("successMsg","Product delete successfully");
+        if (deleteProduct) {
+            session.addFlashAttribute("successMsg", "Product deleted successfully");
+        } else {
+            session.addFlashAttribute("errorMsg",
+                    "Cannot delete product because it is already linked to one or more orders.");
         }
-        else{
-            session.addFlashAttribute("errorMsg","Something is wrong in the server");
-        }
+
         return "redirect:/admin/products";
     }
 

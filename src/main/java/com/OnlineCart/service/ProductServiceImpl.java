@@ -1,6 +1,9 @@
 package com.OnlineCart.service;
 
+import com.OnlineCart.model.Cart;
 import com.OnlineCart.model.Product;
+import com.OnlineCart.repository.CartRepository;
+import com.OnlineCart.repository.ProductOrderRepository;
 import com.OnlineCart.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -21,8 +24,16 @@ import java.util.List;
 
 @Service
 public class ProductServiceImpl implements ProductService{
-@Autowired
-private ProductRepository productRepository;
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private ProductOrderRepository productOrderRepository;
+
+    @Autowired
+    private CartRepository cartRepository;
+
+
 
     @Override
     public Product saveProduct(Product product) {
@@ -37,14 +48,26 @@ private ProductRepository productRepository;
     @Override
     public Boolean deleteProduct(Integer id) {
 
-        Product product = productRepository.findById(id).orElse(null);
-        if(!ObjectUtils.isEmpty(product))
-        {
-            productRepository.delete(product);
-            return true;
+        // STEP 1: check if product is used in any order
+        boolean existsInOrder = productOrderRepository.existsByProductId(id);
+        if (existsInOrder) {
+            return false; // cannot delete product that appears in orders
         }
 
-        return false;
+        // STEP 2: delete all cart rows containing this product
+        List<Cart> carts = cartRepository.findByProductId(id);
+        if (carts != null && !carts.isEmpty()) {
+            cartRepository.deleteAll(carts);
+        }
+
+        // STEP 3: delete product
+        Product product = productRepository.findById(id).orElse(null);
+        if (product == null) {
+            return false;
+        }
+
+        productRepository.delete(product);
+        return true;
     }
 
     @Override
