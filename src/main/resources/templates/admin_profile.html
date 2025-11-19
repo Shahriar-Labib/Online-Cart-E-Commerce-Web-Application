@@ -12,14 +12,20 @@
             <div class="col-md-10 offset-md-1 ">
 
                 <p class="fs-3 text-center">My Profile</p>
-                <th:block th:if="${session.succMsg}">
-                    <p class="text-success fw-bold  text-center">[[${session.succMsg}]]</p>
-                    <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+                <th:block th:if="${successMsg}">
+                    <p class="text-success alert alert-success text-cente">
+                        [[${successMsg}]]
+                    </p>
+                    <!-- Fix: Call removeSessionMessage() as a method -->
+                    <th:block th:text="${@commonServiceImpl.removeSessionMessage()}"></th:block>
                 </th:block>
 
-                <th:block th:if="${session.errorMsg}">
-                    <p class="text-danger fw-bold  text-center">[[${session.errorMsg}]]</p>
-                    <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+                <th:block th:if="${errorMsg}">
+                    <p class="text-danger text-center  alert alert-danger">
+                        [[${errorMsg}]]
+                    </p>
+                    <!-- Fix: Call removeSessionMessage() as a method -->
+                    <th:block th:text="${@commonServiceImpl.removeSessionMessage()}"></th:block>
                 </th:block>
                 <hr>
                 <div class="text-center">
@@ -42,8 +48,8 @@
                             <tr>
                                 <th scope="row">Mobile Number</th>
                                 <td>:</td>
-                                <td><input type="text" name="mobileNumber"
-                                           class="form-control" th:value="${user.mobileNumber}"></td>
+                                <td><input type="text" name="mobile"
+                                           class="form-control" th:value="${user.mobile}"></td>
                             </tr>
                             <tr>
                                 <th scope="row">Email</th>

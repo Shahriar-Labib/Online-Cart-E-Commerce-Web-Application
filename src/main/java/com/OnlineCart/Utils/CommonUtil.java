@@ -91,4 +91,6 @@ public class CommonUtil {
         UserDatas userDtls = userService.getUserByEmail(email);
         return userDtls;
     }
+
+
 }
