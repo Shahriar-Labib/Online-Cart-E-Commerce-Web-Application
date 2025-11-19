@@ -4,14 +4,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+          content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Online Cart</title>
+
+    <style>
+        body {
+            background: #f5f6fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            background: linear-gradient(90deg, #6a11cb, #2575fc);
+            color: white;
+            font-weight: 600;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .btn {
+            border-radius: 10px;
+            transition: 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        }
+
+        table {
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+
+        table th, table td {
+            padding: 12px 15px;
+            text-align: center;
+        }
+
+        table th {
+            background-color: #2575fc;
+            color: white;
+            border-radius: 10px;
+        }
+
+        table tbody tr {
+            background: #fff;
+            border-radius: 10px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        table tbody tr:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .form-control, .form-check-input {
+            border-radius: 8px;
+        }
+
+        .pagination .page-item .page-link {
+            border-radius: 8px;
+            margin: 0 3px;
+            color: #2575fc;
+            font-weight: 500;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #2575fc;
+            color: #fff;
+            border: none;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #c5c5c5;
+            pointer-events: none;
+        }
+
+        .alert {
+            border-radius: 10px;
+            padding: 10px;
+            font-weight: 500;
+        }
+
+        img {
+            border-radius: 8px;
+            object-fit: cover;
+        }
+    </style>
 </head>
 <body>
 <section>
     <div class="container-fluid p-5 mt-5">
         <div class="row">
+            <!-- Add Category Form -->
             <div class="col-md-3">
                 <div class="card shadow p-3 mb-5 bg-body-tertiary rounded">
                     <div class="card-header text-center">
@@ -20,7 +114,6 @@
                             <p class="text-success fw-bold">
                                 [[${successMsg}]]
                             </p>
-                            <!-- Fix: Call removeSessionMessage() as a method -->
                             <th:block th:text="${@commonServiceImpl.removeSessionMessage()}"></th:block>
                         </th:block>
 
@@ -28,10 +121,8 @@
                             <p class="text-danger fw-bold">
                                 [[${errorMsg}]]
                             </p>
-                            <!-- Fix: Call removeSessionMessage() as a method -->
                             <th:block th:text="${@commonServiceImpl.removeSessionMessage()}"></th:block>
                         </th:block>
-
                     </div>
                     <div class="card-body">
                         <form action="/admin/saveCategory" method="post" enctype="multipart/form-data">
@@ -42,18 +133,12 @@
                             <div class="mb-3">
                                 <label>Status</label>
                                 <div class="form-check">
-                                    <!-- Set value="true" for Active -->
                                     <input name="isActive" value="true" checked class="form-check-input" type="radio" id="radioDefault1">
-                                    <label class="form-check-label" for="radioDefault1">
-                                        Active
-                                    </label>
+                                    <label class="form-check-label" for="radioDefault1">Active</label>
                                 </div>
                                 <div class="form-check">
-                                    <!-- Set value="false" for Inactive -->
                                     <input name="isActive" value="false" class="form-check-input" type="radio" id="radioDefault2">
-                                    <label class="form-check-label" for="radioDefault2">
-                                        Inactive
-                                    </label>
+                                    <label class="form-check-label" for="radioDefault2">Inactive</label>
                                 </div>
                             </div>
                             <div class="mb-3">
@@ -66,9 +151,10 @@
                 </div>
             </div>
 
+            <!-- Category Table -->
             <div class="col-md-8">
                 <div class="card shadow p-3 mb-5 bg-body-tertiary rounded">
-                    <div class="card-header text-center fs-4"> Category Details</div>
+                    <div class="card-header text-center fs-4">Category Details</div>
                     <div class="card-body">
                         <table class="table">
                             <thead>
@@ -82,57 +168,51 @@
                             </thead>
                             <tbody>
                             <tr th:each="cat, c : ${categorys}">
-                                <th scope="row">[[${c.count}]]</th>      <!-- correct: c is loop status -->
-                                <td>[[${cat.name}]]</td>                 <!-- fix: access 'name' from 'cat' -->
+                                <th scope="row">[[${c.count}]]</th>
+                                <td>[[${cat.name}]]</td>
                                 <td>[[${cat.isActive}]]</td>
-                                <td><img width="100px" height="80px"
-                                         th:src="@{'/img/category_img/' + ${cat.imageName}}" alt=""></td>
-                                <td><a th:href="@{'/admin/loadEditCategory/' + ${cat.id}}" class="btn btn-primary btn-sm "><i class="fa-regular fa-pen-to-square fa-1x"></i>Edit
-                                </a>
-                                    <a th:href="@{'/admin/deleteCategory/' + ${cat.id}}" class="btn btn-danger btn-sm"><i class="fa-1x fa-solid fa-trash "></i>Delete</a></td>
+                                <td><img width="100px" height="80px" th:src="@{'/img/category_img/' + ${cat.imageName}}" alt=""></td>
+                                <td>
+                                    <a th:href="@{'/admin/loadEditCategory/' + ${cat.id}}" class="btn btn-primary btn-sm">
+                                        <i class="fa-regular fa-pen-to-square fa-1x"></i>Edit
+                                    </a>
+                                    <a th:href="@{'/admin/deleteCategory/' + ${cat.id}}" class="btn btn-danger btn-sm">
+                                        <i class="fa-1x fa-solid fa-trash"></i>Delete
+                                    </a>
+                                </td>
                             </tr>
                             </tbody>
                         </table>
 
-
-                        <div class="row">
-                            <div class="col-md-4">Total Category :
-                                [[${totalElements}]]</div>
+                        <div class="row mt-3">
+                            <div class="col-md-4">Total Category: [[${totalElements}]]</div>
                             <div class="col-md-6">
-
                                 <nav aria-label="Page navigation example">
                                     <ul class="pagination">
-                                        <li class="page-item"
-                                            th:classappend="${isFirst} ? 'disabled':''"><a
-                                                class="page-link"
-                                                th:href="@{'/admin/category?pageNo='+${pageNo-1}}"
-                                                aria-label="Previous"> <span aria-hidden="true">&laquo;</span>
-                                        </a></li>
+                                        <li class="page-item" th:classappend="${isFirst} ? 'disabled':''">
+                                            <a class="page-link" th:href="@{'/admin/category?pageNo='+${pageNo-1}}" aria-label="Previous">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
 
-                                        <li th:each="i:${#numbers.sequence(1,totalPages)}"
-                                            class="page-item"
-                                            th:classappend="${pageNo+1==i}?'active':''" ]]><a
-                                                class="page-link"
-                                                th:href="@{'/admin/category?pageNo='+${i-1}}">[[${i}]]</a></li>
+                                        <li th:each="i:${#numbers.sequence(1,totalPages)}" class="page-item" th:classappend="${pageNo+1==i}?'active':''">
+                                            <a class="page-link" th:href="@{'/admin/category?pageNo='+${i-1}}">[[${i}]]</a>
+                                        </li>
 
-                                        <li class="page-item"
-                                            th:classappend="${isLast} ? 'disabled':''"><a
-                                                class="page-link"
-                                                th:href="@{'/admin/category?pageNo='+${pageNo+1}}"
-                                                aria-label="Next"> <span aria-hidden="true">&raquo;</span>
-                                        </a></li>
+                                        <li class="page-item" th:classappend="${isLast} ? 'disabled':''">
+                                            <a class="page-link" th:href="@{'/admin/category?pageNo='+${pageNo+1}}" aria-label="Next">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
                                     </ul>
                                 </nav>
                             </div>
-
                         </div>
-
 
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 </section>
 </body>
